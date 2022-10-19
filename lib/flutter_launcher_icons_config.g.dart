@@ -22,6 +22,8 @@ FlutterLauncherIconsConfig _$FlutterLauncherIconsConfigFromJson(Map json) =>
               $checkedConvert('adaptive_icon_foreground', (v) => v as String?),
           adaptiveIconBackground:
               $checkedConvert('adaptive_icon_background', (v) => v as String?),
+          adaptiveIconMonochrome:
+              $checkedConvert('adaptive_icon_monochrome', (v) => v as String?),
           minSdkAndroid: $checkedConvert('min_sdk_android',
               (v) => v as int? ?? constants.androidDefaultAndroidMinSDK),
           removeAlphaIOS:
@@ -41,6 +43,7 @@ FlutterLauncherIconsConfig _$FlutterLauncherIconsConfigFromJson(Map json) =>
         'imagePathIOS': 'image_path_ios',
         'adaptiveIconForeground': 'adaptive_icon_foreground',
         'adaptiveIconBackground': 'adaptive_icon_background',
+        'adaptiveIconMonochrome': 'adaptive_icon_monochrome',
         'minSdkAndroid': 'min_sdk_android',
         'removeAlphaIOS': 'remove_alpha_ios',
         'webConfig': 'web',
@@ -59,6 +62,7 @@ Map<String, dynamic> _$FlutterLauncherIconsConfigToJson(
       'image_path_ios': instance.imagePathIOS,
       'adaptive_icon_foreground': instance.adaptiveIconForeground,
       'adaptive_icon_background': instance.adaptiveIconBackground,
+      'adaptive_icon_monochrome': instance.adaptiveIconMonochrome,
       'min_sdk_android': instance.minSdkAndroid,
       'remove_alpha_ios': instance.removeAlphaIOS,
       'web': instance.webConfig,

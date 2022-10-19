@@ -82,6 +82,7 @@ Shown below is the full list of attributes which you can specify within your Flu
 - `adaptive_icon_background`: The color (E.g. `"#ffffff"`) or image asset (E.g. `"assets/images/christmas-background.png"`) which will
 be used to fill out the background of the adaptive icon.
 - `adaptive_icon_foreground`: The image asset which will be used for the icon foreground of the adaptive icon
+- `adaptive_icon_monochrome`: The image asset which will be used for the monochrome version of the adaptive icon (Android 13+)
 *Note: Adaptive Icons will only be generated when both adaptive_icon_background and adaptive_icon_foreground are specified. (the image_path is not automatically taken as foreground)*
 
 ### IOS

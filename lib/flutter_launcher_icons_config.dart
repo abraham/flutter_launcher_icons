@@ -42,6 +42,10 @@ class FlutterLauncherIconsConfig {
   @JsonKey(name: 'adaptive_icon_background')
   final String? adaptiveIconBackground;
 
+  /// android adaptive_icon_monochrome image
+  @JsonKey(name: 'adaptive_icon_monochrome')
+  final String? adaptiveIconMonochrome;
+
   /// Android min_sdk_android
   @JsonKey(name: 'min_sdk_android')
   final int minSdkAndroid;
@@ -71,6 +75,7 @@ class FlutterLauncherIconsConfig {
     this.imagePathIOS,
     this.adaptiveIconForeground,
     this.adaptiveIconBackground,
+    this.adaptiveIconMonochrome,
     this.minSdkAndroid = constants.androidDefaultAndroidMinSDK,
     this.removeAlphaIOS = false,
     this.webConfig,

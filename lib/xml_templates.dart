@@ -14,6 +14,8 @@ const String icLauncherDrawableBackgroundXml = '''
 </adaptive-icon>
 ''';
 
+const String icLauncherMonochromeXml = '<monochrome android:drawable="@drawable/ic_launcher_monochrome"/>';
+
 const String colorsXml = '''
 <?xml version="1.0" encoding="utf-8"?>
 <resources>

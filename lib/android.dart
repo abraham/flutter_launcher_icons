@@ -76,6 +76,7 @@ void createAdaptiveIcons(FlutterLauncherIconsConfig flutterLauncherIconsConfig, 
   // Retrieve the necessary Flutter Launcher Icons configuration from the pubspec.yaml file
   final String? backgroundConfig = flutterLauncherIconsConfig.adaptiveIconBackground;
   final String? foregroundImagePath = flutterLauncherIconsConfig.adaptiveIconForeground;
+  final String? monochromeConfig = flutterLauncherIconsConfig.adaptiveIconMonochrome;
   if (backgroundConfig == null || foregroundImagePath == null) {
     throw const InvalidConfigException(errorMissingImagePath);
   }
@@ -89,11 +90,34 @@ void createAdaptiveIcons(FlutterLauncherIconsConfig flutterLauncherIconsConfig, 
     overwriteExistingIcons(androidIcon, foregroundImage, constants.androidAdaptiveForegroundFileName, flavor);
   }
 
+  bool hasMonochromeIcon = false;
+  if (monochromeConfig != null) {
+    if (isAdaptiveIconConfigPngFile(monochromeConfig)) { 
+      final Image? monochromeImage = decodeImageFile(monochromeConfig);
+      if (monochromeImage != null) {
+        // Create monochrome icon foreground images
+        for (AndroidIconTemplate androidIcon in adaptiveForegroundIcons) {
+          androidIcon = AndroidIconTemplate(size: androidIcon.size, directoryName: '${androidIcon.directoryName}-v26');
+          overwriteExistingIcons(androidIcon, monochromeImage, constants.androidAdaptiveMonochromeFileName, flavor);
+        }
+        hasMonochromeIcon = true;
+      }
+    } else {
+      final monochromeXmlBytes = File(monochromeConfig).readAsBytesSync();
+      if (monochromeXmlBytes.length > 0) {
+        File(constants.androidMonochromeXmlFolder(flavor) + constants.androidAdaptiveMonochromeFileName.substring(0, constants.androidAdaptiveMonochromeFileName.lastIndexOf('.')) + '.xml')
+            .create(recursive: true)
+            .then((File monochromeIcon) => monochromeIcon.writeAsBytesSync(monochromeXmlBytes));
+      }
+      hasMonochromeIcon = true;
+    }
+  }
+
   // Create adaptive icon background
   if (isAdaptiveIconConfigPngFile(backgroundConfig)) {
-    _createAdaptiveBackgrounds(flutterLauncherIconsConfig, backgroundConfig, flavor);
+    _createAdaptiveBackgrounds(flutterLauncherIconsConfig, backgroundConfig, flavor, hasMonochromeIcon);
   } else {
-    createAdaptiveIconMipmapXmlFile(flutterLauncherIconsConfig, flavor);
+    createAdaptiveIconMipmapXmlFile(flutterLauncherIconsConfig, flavor, hasMonochromeIcon);
     updateColorsXmlFile(backgroundConfig, flavor);
   }
 }
@@ -117,20 +141,28 @@ void updateColorsXmlFile(String backgroundConfig, String? flavor) {
   }
 }
 
+void writeTemplate(File file, String base, bool hasMonochromeIcon) {
+  String template = base;
+  if (hasMonochromeIcon) {
+    template = template.replaceFirst('</adaptive-icon>', '  ${xml_template.icLauncherMonochromeXml}\n</adaptive-icon>');
+  }
+  file.writeAsString(template);
+}
+
 /// Creates the xml file required for the adaptive launcher icon
 /// FILE LOCATED HERE: res/mipmap-anydpi/{icon-name-from-yaml-config}.xml
-void createAdaptiveIconMipmapXmlFile(FlutterLauncherIconsConfig flutterLauncherIconsConfig, String? flavor) {
+void createAdaptiveIconMipmapXmlFile(FlutterLauncherIconsConfig flutterLauncherIconsConfig, String? flavor, bool hasMonochromeIcon) {
   if (flutterLauncherIconsConfig.isCustomAndroidFile) {
     File(constants.androidAdaptiveXmlFolder(flavor) + flutterLauncherIconsConfig.android + '.xml')
         .create(recursive: true)
         .then((File adaptiveIcon) {
-      adaptiveIcon.writeAsString(xml_template.icLauncherXml);
+      writeTemplate(adaptiveIcon, xml_template.icLauncherXml, hasMonochromeIcon);
     });
   } else {
     File(constants.androidAdaptiveXmlFolder(flavor) + constants.androidDefaultIconName + '.xml')
         .create(recursive: true)
         .then((File adaptiveIcon) {
-      adaptiveIcon.writeAsString(xml_template.icLauncherXml);
+      writeTemplate(adaptiveIcon, xml_template.icLauncherXml, hasMonochromeIcon);
     });
   }
 }
@@ -140,6 +172,7 @@ void _createAdaptiveBackgrounds(
   FlutterLauncherIconsConfig flutterLauncherIconsConfig,
   String adaptiveIconBackgroundImagePath,
   String? flavor,
+  bool hasMonochromeIcon,
 ) {
   final String filePath = adaptiveIconBackgroundImagePath;
   final Image? image = decodeImageFile(filePath);
@@ -159,13 +192,13 @@ void _createAdaptiveBackgrounds(
     File(constants.androidAdaptiveXmlFolder(flavor) + flutterLauncherIconsConfig.android + '.xml')
         .create(recursive: true)
         .then((File adaptiveIcon) {
-      adaptiveIcon.writeAsString(xml_template.icLauncherDrawableBackgroundXml);
+      writeTemplate(adaptiveIcon, xml_template.icLauncherDrawableBackgroundXml, hasMonochromeIcon);
     });
   } else {
     File(constants.androidAdaptiveXmlFolder(flavor) + constants.androidDefaultIconName + '.xml')
         .create(recursive: true)
         .then((File adaptiveIcon) {
-      adaptiveIcon.writeAsString(xml_template.icLauncherDrawableBackgroundXml);
+      writeTemplate(adaptiveIcon, xml_template.icLauncherDrawableBackgroundXml, hasMonochromeIcon);
     });
   }
 }
